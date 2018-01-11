@@ -20,17 +20,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs 'src'
-        }
-        resources {
-            srcDirs 'src/resources'
-        }
-    }
-}
-
 dependencies {
     compile 'com.amazon.alexa:alexa-skills-kit:1.5.0'
     compile 'com.amazonaws:aws-lambda-java-core:1.0.0'
@@ -52,3 +41,9 @@ task fatJar(type: Jar) {
 }
 
 build.dependsOn fatJar
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+}
+
+

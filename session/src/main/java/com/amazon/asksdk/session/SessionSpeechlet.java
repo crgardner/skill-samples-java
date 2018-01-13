@@ -9,6 +9,8 @@
  */
 package com.amazon.asksdk.session;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,9 +71,30 @@ public class SessionSpeechlet implements SpeechletV2 {
             return setColorInSession(intent, session);
         } else if ("WhatsMyColorIntent".equals(intentName)) {
             return getColorFromSession(intent, session);
+        } else if ("RecallMyColorIntent".equals(intentName)) {
+            return getColorFromPersistence(intent, session);
         } else {
             String errorSpeech = "This is unsupported.  Please try something else.";
             return getSpeechletResponse(errorSpeech, errorSpeech, true);
+        }
+    }
+
+    private SpeechletResponse getColorFromPersistence(Intent intent, Session session) {
+        String speechText = String.format(
+                "Looks like you have already forgotten your favorite color is %s", getColorFromPersistence());
+                       ;
+        String repromptText =
+                "Anything else I can do for you, dufus?";
+
+        return getSpeechletResponse(speechText, repromptText, true);
+    }
+
+    private String getColorFromPersistence() {
+        try {
+            return new String(Files.readAllBytes(Paths.get("/tmp/session.txt")));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "which is nothing, by the way. Jeesh!";
         }
     }
 
@@ -119,6 +142,7 @@ public class SessionSpeechlet implements SpeechletV2 {
             // Store the user's favorite color in the Session and create response.
             String favoriteColor = favoriteColorSlot.getValue();
             session.setAttribute(COLOR_KEY, favoriteColor);
+            persist(favoriteColor);
             speechText =
                     String.format("I now know that your favorite color is %s. You can ask me your "
                             + "favorite color by saying, what's my favorite color?", favoriteColor);
@@ -134,6 +158,14 @@ public class SessionSpeechlet implements SpeechletV2 {
         }
 
         return getSpeechletResponse(speechText, repromptText, true);
+    }
+
+    private void persist(String favoriteColor) {
+        try {
+            Files.write(Paths.get("/tmp/session.txt"), favoriteColor.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

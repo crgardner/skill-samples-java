@@ -9,3 +9,4 @@ WhatsMyColorIntent what is my favorite color
 WhatsMyColorIntent say my favorite color
 WhatsMyColorIntent tell me my favorite color
 WhatsMyColorIntent tell me what my favorite color is
+RecallMyColorIntent what is my saved color

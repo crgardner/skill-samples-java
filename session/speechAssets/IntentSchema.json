@@ -11,6 +11,9 @@
     },
     {
       "intent": "WhatsMyColorIntent"
+    },
+    {
+      "intent": "RecallMyColorIntent"
     }
   ]
 }

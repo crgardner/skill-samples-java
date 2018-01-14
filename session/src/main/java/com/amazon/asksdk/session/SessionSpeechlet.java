@@ -73,10 +73,22 @@ public class SessionSpeechlet implements SpeechletV2 {
             return getColorFromSession(intent, session);
         } else if ("RecallMyColorIntent".equals(intentName)) {
             return getColorFromPersistence(intent, session);
+        } else if ("DeleteMyColorIntent".equals(intentName)) {
+            return deletePersistedColor(intent, session);
         } else {
             String errorSpeech = "This is unsupported.  Please try something else.";
             return getSpeechletResponse(errorSpeech, errorSpeech, true);
         }
+    }
+
+    private SpeechletResponse deletePersistedColor(Intent intent, Session session) {
+        String speechText = "I would not do that if I were you. Oh well! I guess some people will never learn.";
+        try {
+            Files.delete(Paths.get("/tmp/session.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return getSpeechletResponse(speechText, null, false);
     }
 
     private SpeechletResponse getColorFromPersistence(Intent intent, Session session) {
@@ -145,16 +157,22 @@ public class SessionSpeechlet implements SpeechletV2 {
             persist(favoriteColor);
             speechText =
                     String.format("I now know that your favorite color is %s. You can ask me your "
-                            + "favorite color by saying, what's my favorite color?", favoriteColor);
+                            + "favorite color by saying, what's my favorite color?"
+                            + "If I have saved your color, "
+                            + "you can ask what is my saved color. If you want to delete your saved color, "
+                            + "you can say delete my favorite color. Beware.  I may mock you.", favoriteColor);
             repromptText =
-                    "You can ask me your favorite color by saying, what's my favorite color?";
+                    "You can ask me your favorite color by saying, what's my favorite color? "
+                    +  "If I have saved your color, "
+                            + "you can ask what is my saved color. If you want to delete your saved color, "
+                            + "you can say delete my favorite color. Beware.  I may mock you.";
 
         } else {
             // Render an error since we don't know what the users favorite color is.
             speechText = "I'm not sure what your favorite color is, please try again";
             repromptText =
                     "I'm not sure what your favorite color is. You can tell me your favorite "
-                            + "color by saying, my favorite color is red";
+                            + "color by saying, my favorite color is red.";
         }
 
         return getSpeechletResponse(speechText, repromptText, true);

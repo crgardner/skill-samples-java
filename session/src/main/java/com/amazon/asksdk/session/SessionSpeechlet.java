@@ -88,7 +88,9 @@ public class SessionSpeechlet implements SpeechletV2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return getSpeechletResponse(speechText, null, false);
+        SpeechletResponse speechletResponse = getSpeechletResponse(speechText, null, false);
+        speechletResponse.setNullableShouldEndSession(true);
+        return speechletResponse;
     }
 
     private SpeechletResponse getColorFromPersistence(Intent intent, Session session) {
@@ -211,7 +213,7 @@ public class SessionSpeechlet implements SpeechletV2 {
                             + "red";
             isAskResponse = true;
         }
-
+        
         return getSpeechletResponse(speechText, speechText, isAskResponse);
     }
 
@@ -224,11 +226,13 @@ public class SessionSpeechlet implements SpeechletV2 {
         SimpleCard card = new SimpleCard();
         card.setTitle("Session");
         card.setContent(speechText);
+        
 
         // Create the plain text output.
         PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
         speech.setText(speechText);
 
+        SpeechletResponse speechletResponse = null;
         if (isAskResponse) {
             // Create reprompt
             PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
@@ -236,10 +240,13 @@ public class SessionSpeechlet implements SpeechletV2 {
             Reprompt reprompt = new Reprompt();
             reprompt.setOutputSpeech(repromptSpeech);
 
-            return SpeechletResponse.newAskResponse(speech, reprompt, card);
+            speechletResponse = SpeechletResponse.newAskResponse(speech, reprompt, card);
 
         } else {
-            return SpeechletResponse.newTellResponse(speech, card);
+            speechletResponse = SpeechletResponse.newTellResponse(speech, card);
         }
+        
+        speechletResponse.setNullableShouldEndSession(false);
+        return speechletResponse;
     }
 }

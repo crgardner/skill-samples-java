@@ -40,12 +40,15 @@ public class SessionSpeechlet implements SpeechletV2 {
 
     private static final String COLOR_KEY = "COLOR";
     private static final String COLOR_SLOT = "Color";
+    
+    private String interview;
 
     @Override
     public void onSessionStarted(SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope) {
         log.info("onSessionStarted requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 requestEnvelope.getSession().getSessionId());
-        // any initialization logic goes here
+        interview = "blah";
+        requestEnvelope.getSession().setAttribute("START", interview);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class SessionSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse deletePersistedColor(Intent intent, Session session) {
-        String speechText = "I would not do that if I were you. Oh well! I guess some people will never learn.";
+        String speechText = "I would not do that if I were you. Oh well! I guess some people will never learn. By the way, the session variable is " + session.getAttribute("START");
         try {
             Files.delete(Paths.get("/tmp/session.txt"));
         } catch (IOException e) {

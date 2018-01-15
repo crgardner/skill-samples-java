@@ -85,7 +85,7 @@ public class SessionSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse deletePersistedColor(Intent intent, Session session) {
-        String speechText = "I would not do that if I were you. Oh well! I guess some people will never learn. By the way, the session variable is " + session.getAttribute("START");
+        String speechText = "I would not do that if I were you. Oh well! I guess some people will never learn. By the way, the session variable is " + interview + ". Bet you did not think I would know that!";
         try {
             Files.delete(Paths.get("/tmp/session.txt"));
         } catch (IOException e) {
